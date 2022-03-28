@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"github.com/gocolly/colly"
 )
+//big function will work as a switch board housing unique stream scrapers to keep main function clean
  func getStreams(w http.ResponseWriter, r *http.Request){
 	 switch r.URL.Path {
 	 case "/":
