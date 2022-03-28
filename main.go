@@ -5,19 +5,37 @@ import (
 	"net/http"
 )
  func getStreams(w http.ResponseWriter, r *http.Request){
-	 fmt.Fprint(w,"hakuna matata")
+	 switch r.URL.Path {
+	 case "/":
+		 fmt.Fprint(w,"Home page")
+	 case "/all":
+		rojaScrape(w)
+		liveTvScrape(w)
+		mamaHDScrape(w)
+		streamEastScrape(w)
+	 case "/roja":
+		rojaScrape(w)
+	 case "/livetv":
+		liveTvScrape(w)
+	 case "/mamahd":
+		mamaHDScrape(w)
+	 case "/east":
+		streamEastScrape(w)
+	 default:
+		fmt.Fprint(w,"Big fat Error")
+	 }
  }
- func rojaScrape(){
-
+ func rojaScrape(w http.ResponseWriter){
+	 fmt.Fprint(w, "roja \n")
  }
- func liveTvScrape(){
-
+ func liveTvScrape(w http.ResponseWriter){
+	fmt.Fprint(w, "LiveTV \n")
  }
- func mamaHDScrape(){
-
+ func mamaHDScrape(w http.ResponseWriter){
+	fmt.Fprint(w, "MAMAHD \n")
  }
- func streamEastScrape(){
-	 
+ func streamEastScrape(w http.ResponseWriter){
+	fmt.Fprint(w, "StreamEast \n")
  }
 
  func main(){
