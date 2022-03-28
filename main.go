@@ -7,16 +7,19 @@ import (
 )
 //big function will work as a switch board housing unique stream scrapers to keep main function clean
  func getStreams(w http.ResponseWriter, r *http.Request){
+
+	c:=colly.NewCollector()
+
 	 switch r.URL.Path {
 	 case "/":
 		 fmt.Fprint(w,"Home page")
 	 case "/all":
-		rojaScrape(w)
+		rojaScrape(w,c)
 		liveTvScrape(w)
 		mamaHDScrape(w)
 		streamEastScrape(w)
 	 case "/roja":
-		rojaScrape(w)
+		rojaScrape(w,c)
 	 case "/livetv":
 		liveTvScrape(w)
 	 case "/mamahd":
@@ -27,8 +30,22 @@ import (
 		fmt.Fprint(w,"Big fat Error")
 	 }
  }
- func rojaScrape(w http.ResponseWriter){
-	 fmt.Fprint(w, "roja \n")
+ func rojaScrape(w http.ResponseWriter, c *colly.Collector){
+	 fmt.Println("roja scraping ...")
+	//  c:=colly.NewCollector()
+	 c.OnHTML("#agendadiv span.list", func(h *colly.HTMLElement){
+		 selection := h.DOM
+		 childNodes:= selection.Children().Nodes
+		 for class:=0;class<len(childNodes);class++{
+			 value:=selection.FindNodes(childNodes[class]).Text()
+			 fmt.Printf("class:%d text: %s \n", class, value)
+		 }
+	 })
+	 c.OnError(func(r *colly.Response, err error) {
+		fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
+	})
+	 c.Visit("http://www.rojadirecta.me")
+	 fmt.Println("pizza pizza")
  }
  func liveTvScrape(w http.ResponseWriter){
 	fmt.Fprint(w, "LiveTV \n")
@@ -41,6 +58,7 @@ import (
  }
 
  func main(){
+	
 	 http.HandleFunc("/", getStreams)
 	 http.ListenAndServe(":5000", nil)
  }
