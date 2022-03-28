@@ -7,6 +7,19 @@ import (
  func getStreams(w http.ResponseWriter, r *http.Request){
 	 fmt.Fprint(w,"hakuna matata")
  }
+ func rojaScrape(){
+
+ }
+ func liveTvScrape(){
+
+ }
+ func mamaHDScrape(){
+
+ }
+ func streamEastScrape(){
+	 
+ }
+
  func main(){
 	 http.HandleFunc("/", getStreams)
 	 http.ListenAndServe(":5000", nil)
