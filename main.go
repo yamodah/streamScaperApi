@@ -4,39 +4,46 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"encoding/json"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
 )
- var streamLinks []string
+ 
+ type StreamLinks struct{
+	 EventName string `json:"event"`
+	 Streams []string `json:"streams"`
+ }
 //big function will work as a switch board housing unique stream scrapers to keep main function clean
  func getStreams(w http.ResponseWriter, r *http.Request){
 
 	c:=colly.NewCollector()
-	stream:= r.URL.Query().Get("stream")
+	desiredEvent:= r.URL.Query().Get("stream")
+
 	 switch r.URL.Path {
 	 case "/":
 		 fmt.Fprint(w,"Home page")
-	 case "/all":
-		rojaScrape(w,c,stream)
-		liveTvScrape(w)
-		mamaHDScrape(w)
-		streamEastScrape(w)
+	//  case "/all":
+	// 	rojaScrape(w,c,desiredEvent)
+	// 	liveTvScrape(w)
+	// 	mamaHDScrape(w)
+	// 	streamEastScrape(w)
 	 case "/roja":
-		rojaScrape(w,c,stream)
-	 case "/livetv":
-		liveTvScrape(w)
-	 case "/mamahd":
-		mamaHDScrape(w)
-	 case "/east":
-		streamEastScrape(w)
+		rojaScrape(w,c,desiredEvent)
+	//  case "/livetv":
+	// 	liveTvScrape(w)
+	//  case "/mamahd":
+	// 	mamaHDScrape(w)
+	//  case "/east":
+	// 	streamEastScrape(w)
 	 default:
 		fmt.Fprint(w,"Big fat Error")
 	 }
  }
- func rojaScrape(w http.ResponseWriter, c *colly.Collector, stream string){
-	 fmt.Println("roja scraping ...")
+ func rojaScrape(w http.ResponseWriter, c *colly.Collector, desiredEvent string){
 
+	 fmt.Println("roja scraping ...")
+	 
 	 c.OnHTML("#agendadiv span.list", func(h *colly.HTMLElement){
 		 //full table
 		 selection := h.DOM
@@ -46,16 +53,19 @@ import (
 
 			 titles:=selection.FindNodes(childNodes[class]).Find("div.menutitle").Children().Nodes
 			 teamNames:=strings.ToLower(selection.FindNodes(titles...).Find("b span").Text())
-			 if strings.Contains(teamNames,stream) {
+			 if strings.Contains(teamNames,desiredEvent) {
 				 table:=selection.FindNodes(childNodes[class]).Find("tbody").Children().Nodes
 				 rows:=selection.FindNodes(table...).Children().Nodes
 				 links:=selection.FindNodes(rows...).Find("td a")
+				 var streams []string
 				 links.Each(func(i int, s *goquery.Selection) {
 					 link,_ := s.Attr("href")
 					 fmt.Printf("game: %s \nlink: %s\n", teamNames, link)
-					 streamLinks = append(streamLinks, link)
+					 streams = append(streams, link)
 				 })
-				 break
+				streamPack := StreamLinks{teamNames,streams}
+				json.NewEncoder(w).Encode(streamPack)
+				break
 				}
 		 }
 	 })
