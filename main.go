@@ -8,22 +8,22 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
 )
-
+ var streamLinks []string
 //big function will work as a switch board housing unique stream scrapers to keep main function clean
  func getStreams(w http.ResponseWriter, r *http.Request){
 
 	c:=colly.NewCollector()
-
+	stream:= r.URL.Query().Get("stream")
 	 switch r.URL.Path {
 	 case "/":
 		 fmt.Fprint(w,"Home page")
 	 case "/all":
-		rojaScrape(w,c)
+		rojaScrape(w,c,stream)
 		liveTvScrape(w)
 		mamaHDScrape(w)
 		streamEastScrape(w)
 	 case "/roja":
-		rojaScrape(w,c)
+		rojaScrape(w,c,stream)
 	 case "/livetv":
 		liveTvScrape(w)
 	 case "/mamahd":
@@ -34,7 +34,7 @@ import (
 		fmt.Fprint(w,"Big fat Error")
 	 }
  }
- func rojaScrape(w http.ResponseWriter, c *colly.Collector){
+ func rojaScrape(w http.ResponseWriter, c *colly.Collector, stream string){
 	 fmt.Println("roja scraping ...")
 
 	 c.OnHTML("#agendadiv span.list", func(h *colly.HTMLElement){
@@ -46,13 +46,14 @@ import (
 
 			 titles:=selection.FindNodes(childNodes[class]).Find("div.menutitle").Children().Nodes
 			 teamNames:=strings.ToLower(selection.FindNodes(titles...).Find("b span").Text())
-			 if strings.Contains(teamNames,"france") {
+			 if strings.Contains(teamNames,stream) {
 				 table:=selection.FindNodes(childNodes[class]).Find("tbody").Children().Nodes
 				 rows:=selection.FindNodes(table...).Children().Nodes
 				 links:=selection.FindNodes(rows...).Find("td a")
 				 links.Each(func(i int, s *goquery.Selection) {
 					 link,_ := s.Attr("href")
 					 fmt.Printf("game: %s \nlink: %s\n", teamNames, link)
+					 streamLinks = append(streamLinks, link)
 				 })
 				 break
 				}
