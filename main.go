@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"strings"
-	"encoding/json"
 	"os"
 	"log"
+	"strings"
+	"net/http"
+	"encoding/json"
+	"html/template"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
@@ -24,7 +25,7 @@ import (
 
 	 switch r.URL.Path {
 	 case "/":
-		 fmt.Fprint(w," Welcome to Yamodah's Streams ! \n to receive links for a stream, query in url by adding '/all?stream=' followed by the name of a live event. \n for example looking for a fight enter a fighters last name, a football match enter a team name for the query. \n this is a work in progress but please enjoy!")
+		 homePage(w,r)
 	 case "/all":
 		rojaScrape(w,c,desiredEvent)
 	// 	liveTvScrape(w)
@@ -42,9 +43,20 @@ import (
 		fmt.Fprint(w,"Big fat Error")
 	 }
  }
+ func homePage(w http.ResponseWriter, r *http.Request){
+	 var filename = "search.html"
+	 t,err := template.ParseFiles(filename)
+	 if err != nil {
+		 log.Fatal("Error: when parsing file",err)
+	 }
+	 err = t.ExecuteTemplate(w, filename, nil)
+	 if err != nil {
+		log.Fatal("Error: when executing file",err)
+	}
+ }
  func rojaScrape(w http.ResponseWriter, c *colly.Collector, desiredEvent string){
 
-	 fmt.Printf("roja scraping for %s ...", desiredEvent)
+	 fmt.Printf("roja scraping for %s ... \n", desiredEvent)
 	 
 	 c.OnHTML("#agendadiv span.list", func(h *colly.HTMLElement){
 		 //full table
@@ -55,7 +67,7 @@ import (
 
 			 titles:=selection.FindNodes(childNodes[class]).Find("div.menutitle").Children().Nodes
 			 teamNames:=strings.ToLower(selection.FindNodes(titles...).Find("b span").Text())
-			 if strings.Contains(teamNames,desiredEvent) {
+			 if strings.Contains(teamNames,strings.ToLower(desiredEvent)) {
 				 table:=selection.FindNodes(childNodes[class]).Find("tbody").Children().Nodes
 				 rows:=selection.FindNodes(table...).Children().Nodes
 				 links:=selection.FindNodes(rows...).Find("td a")
@@ -75,7 +87,7 @@ import (
 		fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
 	})
 	 c.Visit("http://www.rojadirecta.me")
-	 fmt.Println("*** scraping complete ***")
+	 fmt.Println("... scraping complete")
  }
 //  func liveTvScrape(w http.ResponseWriter){
 // 	fmt.Fprint(w, "LiveTV \n")
