@@ -24,14 +24,14 @@ import (
 
 	 switch r.URL.Path {
 	 case "/":
-		 fmt.Fprint(w,"Home page")
-	//  case "/all":
-	// 	rojaScrape(w,c,desiredEvent)
+		 fmt.Fprint(w,"Welcome to Yamodah's Streams ! \n to receive links for a stream query in url by adding '/all?stream=' followed by the name of a name of a team, event etc. \n for example looking for a fight enter a fighters last name, a football match enter a team name for the query. \n this is a work in progress but please enjoy!")
+	 case "/all":
+		rojaScrape(w,c,desiredEvent)
 	// 	liveTvScrape(w)
 	// 	mamaHDScrape(w)
 	// 	streamEastScrape(w)
-	 case "/roja":
-		rojaScrape(w,c,desiredEvent)
+	//  case "/roja":
+	// 	rojaScrape(w,c,desiredEvent)
 	//  case "/livetv":
 	// 	liveTvScrape(w)
 	//  case "/mamahd":
