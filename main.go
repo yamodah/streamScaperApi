@@ -44,7 +44,7 @@ import (
  }
  func rojaScrape(w http.ResponseWriter, c *colly.Collector, desiredEvent string){
 
-	 fmt.Println("roja scraping ...")
+	 fmt.Printf("roja scraping for %s ...", desiredEvent)
 	 
 	 c.OnHTML("#agendadiv span.list", func(h *colly.HTMLElement){
 		 //full table
