@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 	"net/http"
-	// "encoding/json"
+	"encoding/json"
 	"html/template"
 
 	"github.com/PuerkitoBio/goquery"
@@ -54,17 +54,17 @@ import (
 		log.Fatal("Error: when executing file",err)
 	}
  }
- func linkPage(w http.ResponseWriter, streamPack StreamLinks){
-	var filename = "links.html"
-	t,err := template.ParseFiles(filename)
-	if err != nil {
-		log.Fatal("Error: when parsing file",err)
-	}
-	err = t.ExecuteTemplate(w, filename, streamPack)
-	if err != nil {
-	   log.Fatal("Error: when executing file",err)
-   }
-}
+//  func linkPage(w http.ResponseWriter, streamPack StreamLinks){
+// 	var filename = "links.html"
+// 	t,err := template.ParseFiles(filename)
+// 	if err != nil {
+// 		log.Fatal("Error: when parsing file",err)
+// 	}
+// 	err = t.ExecuteTemplate(w, filename, streamPack)
+// 	if err != nil {
+// 	   log.Fatal("Error: when executing file",err)
+//    }
+// }
  func rojaScrape(w http.ResponseWriter, c *colly.Collector, desiredEvent string){
 
 	 fmt.Printf("roja scraping for %s ... \n", desiredEvent)
@@ -89,8 +89,8 @@ import (
 					 streams = append(streams, link)
 				 })
 				streamPack := StreamLinks{teamNames,streams}
-				linkPage(w,streamPack)
-				// json.NewEncoder(w).Encode(streamPack)
+				// linkPage(w,streamPack)
+				json.NewEncoder(w).Encode(streamPack)
 				break
 				}
 		 }
