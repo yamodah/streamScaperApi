@@ -51,7 +51,7 @@ import (
 		 selection := h.DOM
 		 //individual events
 		 childNodes:= selection.Children().Nodes
-		 for class:=0;class<34;class++{
+		 for class:=0;class<len(childNodes)-1;class++{
 
 			 titles:=selection.FindNodes(childNodes[class]).Find("div.menutitle").Children().Nodes
 			 teamNames:=strings.ToLower(selection.FindNodes(titles...).Find("b span").Text())
@@ -62,7 +62,7 @@ import (
 				 var streams []string
 				 links.Each(func(i int, s *goquery.Selection) {
 					 link,_ := s.Attr("href")
-					 fmt.Printf("game: %s \nlink: %s\n", teamNames, link)
+					//  fmt.Printf("game: %s \nlink: %s\n", teamNames, link)
 					 streams = append(streams, link)
 				 })
 				streamPack := StreamLinks{teamNames,streams}
