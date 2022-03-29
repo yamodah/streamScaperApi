@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"github.com/gocolly/colly"
 )
 //big function will work as a switch board housing unique stream scrapers to keep main function clean
@@ -41,8 +42,11 @@ import (
 		 for class:=0;class<34;class++{
 			 //full event title
 			 value:=selection.FindNodes(childNodes[class]).Find("div.menutitle").Children().Nodes
-			 teamNames:=selection.FindNodes(value...).Find("b span").Text()
-			 fmt.Printf("class:%d text: %s \n", class, teamNames)
+			 teamNames:=strings.ToLower(selection.FindNodes(value...).Find("b span").Text())
+			 if strings.Contains(teamNames,"rockets") {
+				 
+				 fmt.Printf("class:%d text: %s \n", class, teamNames)
+			 }
 		 }
 	 })
 	 c.OnError(func(r *colly.Response, err error) {
