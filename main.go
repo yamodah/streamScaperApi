@@ -75,15 +75,15 @@ import (
 	 c.Visit("http://www.rojadirecta.me")
 	 fmt.Println("*** scraping complete ***")
  }
- func liveTvScrape(w http.ResponseWriter){
-	fmt.Fprint(w, "LiveTV \n")
- }
- func mamaHDScrape(w http.ResponseWriter){
-	fmt.Fprint(w, "MAMAHD \n")
- }
- func streamEastScrape(w http.ResponseWriter){
-	fmt.Fprint(w, "StreamEast \n")
- }
+//  func liveTvScrape(w http.ResponseWriter){
+// 	fmt.Fprint(w, "LiveTV \n")
+//  }
+//  func mamaHDScrape(w http.ResponseWriter){
+// 	fmt.Fprint(w, "MAMAHD \n")
+//  }
+//  func streamEastScrape(w http.ResponseWriter){
+// 	fmt.Fprint(w, "StreamEast \n")
+//  }
 
  func main(){
 	
