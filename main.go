@@ -32,13 +32,17 @@ import (
  }
  func rojaScrape(w http.ResponseWriter, c *colly.Collector){
 	 fmt.Println("roja scraping ...")
-	//  c:=colly.NewCollector()
+
 	 c.OnHTML("#agendadiv span.list", func(h *colly.HTMLElement){
+		 //full table
 		 selection := h.DOM
+		 //individual events
 		 childNodes:= selection.Children().Nodes
-		 for class:=0;class<len(childNodes);class++{
-			 value:=selection.FindNodes(childNodes[class]).Text()
-			 fmt.Printf("class:%d text: %s \n", class, value)
+		 for class:=0;class<34;class++{
+			 //full event title
+			 value:=selection.FindNodes(childNodes[class]).Find("div.menutitle").Children().Nodes
+			 teamNames:=selection.FindNodes(value...).Find("b span").Text()
+			 fmt.Printf("class:%d text: %s \n", class, teamNames)
 		 }
 	 })
 	 c.OnError(func(r *colly.Response, err error) {
