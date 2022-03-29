@@ -46,13 +46,13 @@ import (
 
 			 titles:=selection.FindNodes(childNodes[class]).Find("div.menutitle").Children().Nodes
 			 teamNames:=strings.ToLower(selection.FindNodes(titles...).Find("b span").Text())
-			 if strings.Contains(teamNames,"thunder") {
+			 if strings.Contains(teamNames,"france") {
 				 table:=selection.FindNodes(childNodes[class]).Find("tbody").Children().Nodes
 				 rows:=selection.FindNodes(table...).Children().Nodes
 				 links:=selection.FindNodes(rows...).Find("td a")
 				 links.Each(func(i int, s *goquery.Selection) {
 					 link,_ := s.Attr("href")
-					 fmt.Println(link)
+					 fmt.Printf("game: %s \nlink: %s\n", teamNames, link)
 				 })
 				 break
 				}
