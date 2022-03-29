@@ -62,7 +62,7 @@ import (
 		fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
 	})
 	 c.Visit("http://www.rojadirecta.me")
-	 fmt.Println("scraping complete")
+	 fmt.Println("*** scraping complete ***")
  }
  func liveTvScrape(w http.ResponseWriter){
 	fmt.Fprint(w, "LiveTV \n")
