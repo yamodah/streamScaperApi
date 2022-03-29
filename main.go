@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 	"encoding/json"
+	"os"
+	"log"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
@@ -14,7 +16,7 @@ import (
 	 EventName string `json:"event"`
 	 Streams []string `json:"streams"`
  }
-//big function will work as a switch board housing unique stream scrapers to keep main function clean
+//Big function will work as a switch board housing unique stream scrapers to keep main function clean
  func getStreams(w http.ResponseWriter, r *http.Request){
 
 	c:=colly.NewCollector()
@@ -86,7 +88,7 @@ import (
 //  }
 
  func main(){
-	
+	 port:=os.Getenv("PORT")
 	 http.HandleFunc("/", getStreams)
-	 http.ListenAndServe(":5000", nil)
+	 log.Fatal(http.ListenAndServe(":"+port, nil))
  }
