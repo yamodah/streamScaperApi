@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
 )
+
 //big function will work as a switch board housing unique stream scrapers to keep main function clean
  func getStreams(w http.ResponseWriter, r *http.Request){
 
@@ -40,20 +43,26 @@ import (
 		 //individual events
 		 childNodes:= selection.Children().Nodes
 		 for class:=0;class<34;class++{
-			 //full event title
-			 value:=selection.FindNodes(childNodes[class]).Find("div.menutitle").Children().Nodes
-			 teamNames:=strings.ToLower(selection.FindNodes(value...).Find("b span").Text())
-			 if strings.Contains(teamNames,"rockets") {
-				 
-				 fmt.Printf("class:%d text: %s \n", class, teamNames)
-			 }
+
+			 titles:=selection.FindNodes(childNodes[class]).Find("div.menutitle").Children().Nodes
+			 teamNames:=strings.ToLower(selection.FindNodes(titles...).Find("b span").Text())
+			 if strings.Contains(teamNames,"thunder") {
+				 table:=selection.FindNodes(childNodes[class]).Find("tbody").Children().Nodes
+				 rows:=selection.FindNodes(table...).Children().Nodes
+				 links:=selection.FindNodes(rows...).Find("td a")
+				 links.Each(func(i int, s *goquery.Selection) {
+					 link,_ := s.Attr("href")
+					 fmt.Println(link)
+				 })
+				 break
+				}
 		 }
 	 })
 	 c.OnError(func(r *colly.Response, err error) {
 		fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
 	})
 	 c.Visit("http://www.rojadirecta.me")
-	 fmt.Println("pizza pizza")
+	 fmt.Println("scraping complete")
  }
  func liveTvScrape(w http.ResponseWriter){
 	fmt.Fprint(w, "LiveTV \n")
