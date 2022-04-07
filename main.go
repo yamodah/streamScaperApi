@@ -14,11 +14,16 @@ import (
 )
  
  type StreamLinks struct{
-	 EventName string `json:"event"`
+	 StreamingSite string `json:"site"`
 	 Streams []string `json:"streams"`
  }
+ type StreamsBundle struct{
+	 EventName string `json:"event"`
+	 Links []StreamLinks `json:"links"`
+ }
+
 //Big function will work as a switch board housing unique stream scrapers to keep main function clean
- func getStreams(w http.ResponseWriter, r *http.Request){
+func getStreams(w http.ResponseWriter, r *http.Request){
 
 	c:=colly.NewCollector()
 	desiredEvent:= r.URL.Query().Get("stream")
@@ -27,17 +32,12 @@ import (
 	 case "/":
 		 homePage(w,r)
 	 case "/all":
-		rojaScrape(w,c,desiredEvent)
-	// 	liveTvScrape(w)
+		StreamsBundle:= StreamsBundle{EventName: desiredEvent}
+		rojaScrape(w,c,desiredEvent, &StreamsBundle)
+		// liveTvScrape(w,c,desiredEvent)
+		// fmt.Println(StreamsBundle)
+		json.NewEncoder(w).Encode(StreamsBundle)
 	// 	mamaHDScrape(w)
-	// 	streamEastScrape(w)
-	//  case "/roja":
-	// 	rojaScrape(w,c,desiredEvent)
-	//  case "/livetv":
-	// 	liveTvScrape(w)
-	//  case "/mamahd":
-	// 	mamaHDScrape(w)
-	//  case "/east":
 	// 	streamEastScrape(w)
 	 default:
 		fmt.Fprint(w,"Big fat Error")
@@ -54,18 +54,8 @@ import (
 		log.Fatal("Error: when executing file",err)
 	}
  }
-//  func linkPage(w http.ResponseWriter, streamPack StreamLinks){
-// 	var filename = "links.html"
-// 	t,err := template.ParseFiles(filename)
-// 	if err != nil {
-// 		log.Fatal("Error: when parsing file",err)
-// 	}
-// 	err = t.ExecuteTemplate(w, filename, streamPack)
-// 	if err != nil {
-// 	   log.Fatal("Error: when executing file",err)
-//    }
-// }
- func rojaScrape(w http.ResponseWriter, c *colly.Collector, desiredEvent string){
+
+ func rojaScrape(w http.ResponseWriter, c *colly.Collector, desiredEvent string, Streamsbundle *StreamsBundle){
 
 	 fmt.Printf("roja scraping for %s ... \n", desiredEvent)
 	 
@@ -85,12 +75,11 @@ import (
 				 var streams []string
 				 links.Each(func(i int, s *goquery.Selection) {
 					 link,_ := s.Attr("href")
-					//  fmt.Printf("game: %s \nlink: %s\n", teamNames, link)
 					 streams = append(streams, link)
 				 })
-				streamPack := StreamLinks{teamNames,streams}
-				// linkPage(w,streamPack)
-				json.NewEncoder(w).Encode(streamPack)
+				streamPack := StreamLinks{"ROJA",streams}
+				Streamsbundle.EventName = teamNames
+				Streamsbundle.Links = append(Streamsbundle.Links,streamPack)
 				break
 				}
 		 }
@@ -101,8 +90,9 @@ import (
 	 c.Visit("http://www.rojadirecta.me")
 	 fmt.Println("... scraping complete")
  }
-//  func liveTvScrape(w http.ResponseWriter){
-// 	fmt.Fprint(w, "LiveTV \n")
+//  func liveTvScrape(w http.ResponseWriter, c *colly.Collector, desiredEvent string){
+	
+// 	// fmt.Fprint(w, "LiveTV \n")
 //  }
 //  func mamaHDScrape(w http.ResponseWriter){
 // 	fmt.Fprint(w, "MAMAHD \n")
