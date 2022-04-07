@@ -33,8 +33,8 @@ func getStreams(w http.ResponseWriter, r *http.Request){
 		 homePage(w,r)
 	 case "/all":
 		StreamsBundle:= StreamsBundle{EventName: desiredEvent}
-		rojaScrape(w,c,desiredEvent, &StreamsBundle)
 		liveTvScrape(w,c,desiredEvent, &StreamsBundle)
+		rojaScrape(w,c,desiredEvent, &StreamsBundle)
 		// fmt.Println(StreamsBundle)
 		json.NewEncoder(w).Encode(StreamsBundle)
 	// 	mamaHDScrape(w)
