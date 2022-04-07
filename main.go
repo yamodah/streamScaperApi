@@ -34,7 +34,7 @@ func getStreams(w http.ResponseWriter, r *http.Request){
 	 case "/all":
 		StreamsBundle:= StreamsBundle{EventName: desiredEvent}
 		rojaScrape(w,c,desiredEvent, &StreamsBundle)
-		// liveTvScrape(w,c,desiredEvent)
+		liveTvScrape(w,c,desiredEvent, &StreamsBundle)
 		// fmt.Println(StreamsBundle)
 		json.NewEncoder(w).Encode(StreamsBundle)
 	// 	mamaHDScrape(w)
@@ -90,10 +90,23 @@ func getStreams(w http.ResponseWriter, r *http.Request){
 	 c.Visit("http://www.rojadirecta.me")
 	 fmt.Println("... scraping complete")
  }
-//  func liveTvScrape(w http.ResponseWriter, c *colly.Collector, desiredEvent string){
-	
-// 	// fmt.Fprint(w, "LiveTV \n")
-//  }
+ func liveTvScrape(w http.ResponseWriter, c *colly.Collector, desiredEvent string, Streamsbundle *StreamsBundle){
+	 liveTvURL := "http://livetv.ru/enx/megasearch/?msq="+desiredEvent
+	 c.OnXML("/html/body/table/tbody/tr/td[2]/table/tbody/tr[3]/td/table/tbody/tr/td[2]/table/tbody/tr/td/table/tbody/tr[2]/td/table/tbody/tr/td/table/tbody/tr/td/table[5]/tbody/tr/td[2]/a", func(h *colly.XMLElement){
+		 link:= h.Attr("href")
+		 link = strings.ReplaceAll(link,"__/","")
+		 var liveLink[]string
+		 liveLink=append(liveLink, "http://livetv.ru"+link)
+		 streamPack:= StreamLinks{"liveTV", liveLink}
+		 Streamsbundle.Links = append(Streamsbundle.Links,streamPack)
+		 
+	 })
+	 c.OnError(func(r *colly.Response, err error) {
+		fmt.Println("Request URL:", r.Request.URL, "failed with response:", r.Body, "\nError:", err)
+	})
+	// fmt.Fprint(w, "LiveTV \n")
+	c.Visit(liveTvURL)
+ }
 //  func mamaHDScrape(w http.ResponseWriter){
 // 	fmt.Fprint(w, "MAMAHD \n")
 //  }
