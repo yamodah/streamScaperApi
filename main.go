@@ -34,8 +34,8 @@ func getStreams(w http.ResponseWriter, r *http.Request){
 	 case "/all":
 		StreamsBundle:= StreamsBundle{EventName: desiredEvent}
 		liveTvScrape(w,c,desiredEvent, &StreamsBundle)
-		rojaScrape(w,c,desiredEvent, &StreamsBundle)
 		liveStream2Watch(w,c,desiredEvent, &StreamsBundle)
+		rojaScrape(w,c,desiredEvent, &StreamsBundle)
 		json.NewEncoder(w).Encode(StreamsBundle)
 
 	 default:
