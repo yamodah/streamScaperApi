@@ -35,10 +35,9 @@ func getStreams(w http.ResponseWriter, r *http.Request){
 		StreamsBundle:= StreamsBundle{EventName: desiredEvent}
 		liveTvScrape(w,c,desiredEvent, &StreamsBundle)
 		rojaScrape(w,c,desiredEvent, &StreamsBundle)
-		// fmt.Println(StreamsBundle)
+		liveStream2Watch(w,c,desiredEvent, &StreamsBundle)
 		json.NewEncoder(w).Encode(StreamsBundle)
-	// 	mamaHDScrape(w)
-	// 	streamEastScrape(w)
+
 	 default:
 		fmt.Fprint(w,"Big fat Error")
 	 }
@@ -107,12 +106,22 @@ func getStreams(w http.ResponseWriter, r *http.Request){
 	// fmt.Fprint(w, "LiveTV \n")
 	c.Visit(liveTvURL)
  }
-//  func mamaHDScrape(w http.ResponseWriter){
-// 	fmt.Fprint(w, "MAMAHD \n")
-//  }
-//  func streamEastScrape(w http.ResponseWriter){
-// 	fmt.Fprint(w, "StreamEast \n")
-//  }
+func liveStream2Watch(w http.ResponseWriter, c *colly.Collector, desiredEvent string, Streamsbundle *StreamsBundle){
+	liveStreamURL := "https://live.xn--tream2watch-i9d.com/search?q="+desiredEvent
+	c.OnHTML("div.main div.main-inner div.layouts-page-content div.layouts-search-single-item._rows._stm.stream-box div.item-body a", func(h *colly.HTMLElement) {
+
+		link:= h.Attr("href")
+		 link = strings.ReplaceAll(link,"__/","")
+		 var liveLink[]string
+		 liveLink=append(liveLink,link)
+		 streamPack:= StreamLinks{"liveStream", liveLink}
+		 Streamsbundle.Links = append(Streamsbundle.Links,streamPack)
+	})
+	c.OnError(func(r *colly.Response, err error) {
+		fmt.Println("Request URL:", r.Request.URL, "failed with response:", r.Body, "\nError:", err)
+	})
+	c.Visit(liveStreamURL)
+}
 
  func main(){
 	 port:=os.Getenv("PORT")
