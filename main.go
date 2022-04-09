@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"html/template"
 
+    "github.com/gorilla/mux"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
 )
@@ -28,20 +29,14 @@ func getStreams(w http.ResponseWriter, r *http.Request){
 	c:=colly.NewCollector()
 	desiredEvent:= r.URL.Query().Get("stream")
 
-	 switch r.URL.Path {
-	 case "/":
-		 homePage(w,r)
-	 case "/all":
 		StreamsBundle:= StreamsBundle{EventName: desiredEvent}
 		liveTvScrape(w,c,desiredEvent, &StreamsBundle)
 		liveStream2Watch(w,c,desiredEvent, &StreamsBundle)
 		rojaScrape(w,c,desiredEvent, &StreamsBundle)
 		json.NewEncoder(w).Encode(StreamsBundle)
 
-	 default:
-		fmt.Fprint(w,"Big fat Error")
-	 }
  }
+
  func homePage(w http.ResponseWriter, r *http.Request){
 	 var filename = "search.html"
 	 t,err := template.ParseFiles(filename)
@@ -56,7 +51,7 @@ func getStreams(w http.ResponseWriter, r *http.Request){
 
  func rojaScrape(w http.ResponseWriter, c *colly.Collector, desiredEvent string, Streamsbundle *StreamsBundle){
 
-	 fmt.Printf("roja scraping for %s ... \n", desiredEvent)
+	//  fmt.Printf("roja scraping for %s ... \n", desiredEvent)
 	 
 	 c.OnHTML("#agendadiv span.list", func(h *colly.HTMLElement){
 		 //full table
@@ -87,7 +82,7 @@ func getStreams(w http.ResponseWriter, r *http.Request){
 		fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
 	})
 	 c.Visit("http://www.rojadirecta.me")
-	 fmt.Println("... scraping complete")
+	//  fmt.Println("... scraping complete")
  }
  func liveTvScrape(w http.ResponseWriter, c *colly.Collector, desiredEvent string, Streamsbundle *StreamsBundle){
 	 liveTvURL := "http://livetv.ru/enx/megasearch/?msq="+desiredEvent
@@ -125,6 +120,9 @@ func liveStream2Watch(w http.ResponseWriter, c *colly.Collector, desiredEvent st
 
  func main(){
 	 port:=os.Getenv("PORT")
-	 http.HandleFunc("/", getStreams)
-	 log.Fatal(http.ListenAndServe(":"+port, nil))
+	 r:=mux.NewRouter().StrictSlash(true)
+	 r.HandleFunc("/",homePage)
+	 r.HandleFunc("/all", getStreams)
+	 r.Methods("GET")
+	 log.Fatal(http.ListenAndServe(":"+port, r))
  }
