@@ -10,6 +10,7 @@ import (
 	"html/template"
 
     "github.com/gorilla/mux"
+	"github.com/gorilla/handlers"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
 )
@@ -123,6 +124,9 @@ func liveStream2Watch(w http.ResponseWriter, c *colly.Collector, desiredEvent st
 	 r:=mux.NewRouter().StrictSlash(true)
 	 r.HandleFunc("/",homePage)
 	 r.HandleFunc("/all", getStreams)
-	 r.Methods("GET")
-	 log.Fatal(http.ListenAndServe(":"+port, r))
+	//  credentials := handlers.AllowCredentials()
+    //  methods := handlers.AllowedMethods([]string{"GET"})
+    //  origins := handlers.AllowedOrigins([]string{"*"})
+     log.Fatal(http.ListenAndServe(":"+port, handlers.CORS()(r)))
+
  }
