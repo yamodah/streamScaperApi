@@ -13,4 +13,16 @@ and provide a friendlier list of links.
 
 The API lives at https://yamodahstreams.herokuapp.com/ 
 
+![screenshot](./images/streamScraperAPI.png)
+
+If you have a json reader extension on your broweser this should be sufficent. 
+![screenshot](./images/streamsJSON.png)
+
+However, if you do not a frontend client lives at https://streamsrus.netlify.app/ with clickable links for your convenience. 
+
+![screenshot](./images/streamsFrontend.png)
+
+
+
+If you have any suggestions to imporve the webscrapping or overall experience please feel to reach out!
 
